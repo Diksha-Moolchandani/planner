@@ -36,3 +36,7 @@ target_link_libraries(drone_path_traj_reg_node yaml-cpp ${catkin_LIBRARIES})
 
 add_executable(interactive_rviz_goal_node src/interactive_goal.cpp)
 target_link_libraries(interactive_rviz_goal_node ${catkin_LIBRARIES})
+
+add_executable(drone_path_traj_contol_take_off  src/mav_ros_take_off.cc)
+
+target_link_libraries(drone_path_traj_contol_take_off yaml-cpp ${catkin_LIBRARIES})

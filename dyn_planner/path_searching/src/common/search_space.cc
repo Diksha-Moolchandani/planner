@@ -20,6 +20,7 @@ namespace hagen {
         number_of_max_attempts = number_of_tries_at_time;
         obstacle_counter = 0;
         avoidance_width = _avoidance_width;
+	std::cout << "**********number of samples************: " << number_of_rand_points<< endl;
     }
 
     void SearchSpace::setEnvironment(const dyn_planner::EDTEnvironment::Ptr& env){

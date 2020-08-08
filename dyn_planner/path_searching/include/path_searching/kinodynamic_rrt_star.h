@@ -101,7 +101,7 @@ private:
   double tie_breaker_ = 1.0 + 1.0 / 10000;
   int number_of_paths = 4;
   double r = 0.1;
-  int max_samples = 400;
+  int max_samples;
   int rewrite_count = 32;
   double proc = 0.1;
   int save_data_index = 0;
@@ -114,7 +114,7 @@ private:
   double resolution_, inv_resolution_, time_resolution_, inv_time_resolution_;
   Eigen::Vector3d origin_, map_size_3d_;
   double time_origin_;
-
+  
   Eigen::Vector3i posToIndex(Eigen::Vector3d pt);
   int timeToIndex(double time);
 
@@ -126,11 +126,11 @@ private:
   boost::asio::io_service io_service;
   boost::thread_group threads;
   std::unique_ptr<boost::asio::io_service::work> service_work;
-
+  
 public:
   KinodynamicRRTstar(){};
   ~KinodynamicRRTstar();
-
+  double path_length;
   enum
   {
     REACH_HORIZON = 1,
@@ -158,7 +158,7 @@ public:
             , Eigen::Quaternion<double> q);
   Eigen::MatrixXd getSamplesRRTAlternative(double& ts, int& K, bool& is_exist);
   std::vector<std::vector<kamaz::hagen::PathNode>> smoothed_paths;
-
+  
   template <typename T> std::vector<size_t> sort_indexes(const std::vector<T> &v) {
     // initialize original index locations
     std::vector<size_t> idx(v.size());
@@ -170,7 +170,12 @@ public:
     std::stable_sort(idx.begin(), idx.end(),[&v](size_t i1, size_t i2) {return std::get<1>(v[i1]) < std::get<1>(v[i2]);});
     return idx;
   }
-
+  double getpath_length(){
+  	return path_length;
+  }
+  void setpath_length(double path_length){
+  	path_length=0;
+  }
   std::vector<std::tuple<double, bool, int>> paths_costs;
   std::vector<std::tuple<double, bool, int>> paths_costs_end_found;
   std::vector<size_t> path_cost_indices;

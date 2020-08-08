@@ -60,7 +60,7 @@ void DynPlannerManager::getSolvingTime(double& ts, double& to, double& ta)
   to = time_optimize_;
   ta = time_adjust_;
 }
-
+//  double t_search = 0.0, t_opt = 0.0, t_adjust = 0.0;
 bool DynPlannerManager::generateTrajectory(Eigen::Vector3d start_pt, Eigen::Vector3d start_vel, Eigen::Vector3d start_acc
                                                     , Eigen::Vector3d end_pt, Eigen::Vector3d end_vel
                                                     , double increase_cleareance, int path_index, std::atomic_bool &is_allowed_to_run)
@@ -106,12 +106,12 @@ bool DynPlannerManager::generateTrajectory(Eigen::Vector3d start_pt, Eigen::Vect
     cout << "[planner]: init search success." << endl;
   }
 
-  
+    
 
-  t2 = ros::Time::now();
+//  t_search += (ros::Time::now() - t1).toSec();
 
+//  cout << "***********time*************: " << t_search << endl;
   /* ---------- bspline parameterization ---------- */
-  t1 = ros::Time::now();
 
   int K_rrt;
   double ts_rrt = 0.1;
@@ -177,6 +177,9 @@ bool DynPlannerManager::generateTrajectory(Eigen::Vector3d start_pt, Eigen::Vect
   pos.checkFeasibility(true);
   // drawVelAndAccPro(pos);
   traj_pos_ = pos;
+  t_search += (ros::Time::now() - t1).toSec();
+  cout << "***********time*************: " << t_search << endl;
+
   return true;
 }
 

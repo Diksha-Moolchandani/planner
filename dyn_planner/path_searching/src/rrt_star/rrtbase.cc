@@ -20,6 +20,7 @@ namespace hagen {
             search_init = options.init_search;
             opt = options;
             phi_ = Eigen::MatrixXd::Identity(6, 6);
+	    std::cout << "*********rrt resolution is**********: " << r << std::endl;
     }
 
     void RRTBase::add_tree(){

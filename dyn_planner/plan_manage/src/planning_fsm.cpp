@@ -1,4 +1,4 @@
-
+#include <path_searching/kinodynamic_rrt_star.h>
 #include <plan_manage/planning_fsm.h>
 
 namespace dyn_planner
@@ -160,12 +160,24 @@ void PlanningFSM::execFSMCallback(const ros::TimerEvent& e)
       wait_for_goal.publish(emt);
       stop_moving.publish(emt);
       change_path_index = 0;
+      temp_pt(0) = 1;
+      temp_pt(1) = 2;
+      temp_pt(2) = 1;
+      temp_vel(0) = 0;
+      temp_vel(1) = 0;
+      temp_vel(2) = 0;
+      path_finder_->path_length=0;
+      planner_manager_->t_search = 0;
       if (!have_goal_){
         // std::cout<< "Wait for goal..." << std::endl;
         return;
       }
       else
       {
+//	cout << "*********path length is: **********" << path_finder_->path_length << endl;
+//	cout << "*********time is:******************" << planner_manager_->t_search << endl;
+//	path_finder_->path_length=0;
+ //       planner_manager_->t_search = 0;
         changeExecState(GEN_NEW_TRAJ, "FSM");
       }
       break;
@@ -179,13 +191,15 @@ void PlanningFSM::execFSMCallback(const ros::TimerEvent& e)
       start_pt_(0) = odom.pose.pose.position.x;
       start_pt_(1) = odom.pose.pose.position.y;
       start_pt_(2) = odom.pose.pose.position.z;
-
+  //    start_pt_.setZero();
+      path_finder_->path_length=0;
       // start_vel_(0) = odom.twist.twist.linear.x;
       // start_vel_(1) = odom.twist.twist.linear.y;
       // start_vel_(2) = odom.twist.twist.linear.z;
       start_vel_.setZero();
       start_acc_.setZero();
       path_finder_->setEnvironment(edt_env_);
+     
       bool success = planSearchOpt();
       if (success)
       {
@@ -236,6 +250,8 @@ void PlanningFSM::execFSMCallback(const ros::TimerEvent& e)
       if (t_cur > planner_manager_->traj_duration_ - 1e-2)
       {
         cout << "-------- planner_manager_->traj_duration_ "<< planner_manager_->traj_duration_ << endl;
+	cout << "*********final path length is: **********" << path_finder_->path_length << endl;
+        cout << "*********search time is:******************" << planner_manager_->t_search << endl;
         have_goal_ = false;
         std_msgs::Empty emt;
         stop_moving.publish(emt);
@@ -278,13 +294,13 @@ void PlanningFSM::execFSMCallback(const ros::TimerEvent& e)
       start_pt_(0) = odom.pose.pose.position.x;
       start_pt_(1) = odom.pose.pose.position.y;
       start_pt_(2) = odom.pose.pose.position.z;
-
+  //    start_pt_.setZero();
       // start_vel_(0) = odom.twist.twist.linear.x;
       // start_vel_(1) = odom.twist.twist.linear.y;
       // start_vel_(2) = odom.twist.twist.linear.z;
       start_vel_.setZero();
       start_acc_.setZero();
-
+//      path_finder_->path_length=0;
       cout << "t_cur: " << t_cur << endl;
       // cout << "start pt: " << start_pt_.transpose() << endl;
 
@@ -378,7 +394,7 @@ void PlanningFSM::safetyCallback(const ros::TimerEvent& e)
         }
       }
 
-      if (max_dist > planner_manager_->margin_)
+    /*  if (max_dist > planner_manager_->margin_)
       {
         cout << "change goal, replan." << endl;
         end_pt_ = goal;
@@ -391,7 +407,7 @@ void PlanningFSM::safetyCallback(const ros::TimerEvent& e)
         visualization_->drawGoal(end_pt_, 0.3, Eigen::Vector4d(1, 0, 0, 1.0));
       }
       else
-      {
+      {*/
         // have_goal_ = false;
         // cout << "Goal near collision, stop." << endl;
         // changeExecState(WAIT_GOAL, "SAFETY");
@@ -399,7 +415,7 @@ void PlanningFSM::safetyCallback(const ros::TimerEvent& e)
         changeExecState(REPLAN_TRAJ, "FSM");
         std_msgs::Empty emt;
         replan_pub_.publish(emt);
-      }
+    //  }
     }
   }
 }
@@ -409,9 +425,14 @@ bool PlanningFSM::planSearchOpt()
 
   int path_index = change_path_index;
   planner_status = true; 
+ // Eigen::Vector3d temp_pt(1, 1, 1);
+//  Eigen::Vector3d temp_vel(0, 0, 0);
+
   bool plan_success = planner_manager_->generateTrajectory(start_pt_, start_vel_, start_acc_, end_pt_, end_vel_
             , increase_cleareance, path_index, planner_status);
 
+ //  bool plan_success = planner_manager_->generateTrajectory(start_pt_, start_vel_, start_acc_, temp_pt, temp_vel
+ //           , increase_cleareance, path_index, planner_status);
   if (plan_success)
   {
     planner_manager_->retrieveTrajectory();

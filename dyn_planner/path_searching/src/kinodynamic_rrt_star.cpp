@@ -74,10 +74,10 @@ int KinodynamicRRTstar::search(Eigen::Vector3d start_pt, Eigen::Vector3d start_v
   rrt_planner_options.origin_ = origin_;
   rrt_planner_options.map_size_3d_ = map_size_3d_;
   int times = (number_of_paths > 0) ? number_of_paths: 1;
-  rrt_avoidance_dist = (rrt_avoidance_dist > 0) ? rrt_avoidance_dist: 0.6;
+//  rrt_avoidance_dist = (rrt_avoidance_dist > 0) ? rrt_avoidance_dist: 0.6;
 
   double rrt_avoidance_dist_mod = rrt_avoidance_dist + increase_cleareance;
-  rrt_avoidance_dist_mod = (rrt_avoidance_dist_mod < 1.0 ) ? rrt_avoidance_dist_mod: 1.0;
+//  rrt_avoidance_dist_mod = (rrt_avoidance_dist_mod < 1.0 ) ? rrt_avoidance_dist_mod: 1.0;
 
   int number_of_random_points_in_search_space = 200;
   Eigen::VectorXd x_dimentions(6);
@@ -95,7 +95,7 @@ int KinodynamicRRTstar::search(Eigen::Vector3d start_pt, Eigen::Vector3d start_v
   
   for (int i = 0; i < times; i++) {
       kamaz::hagen::SearchSpace X;
-      X.init_search_space(x_dimentions, number_of_random_points_in_search_space, rrt_avoidance_dist_mod, 10);
+      X.init_search_space(x_dimentions, max_samples, rrt_avoidance_dist_mod, 10);
       X.use_whole_search_sapce = is_using_whole_space;
       X.setEnvironment(this->edt_env_);
       // create_map(this->edt_env_->get_obs_map());
@@ -106,9 +106,14 @@ int KinodynamicRRTstar::search(Eigen::Vector3d start_pt, Eigen::Vector3d start_v
                 // Eigen::Vector3d new_center_point(4);
                 // std::cout<< "======2"<< space_min_z << std::endl;
                 // covmat = Eigen::MatrixXd::Zero(3,3);
-                radious[0] = (std::abs(center[0]) < 4.0) ? 4.0 : std::abs(center[0]);
+           /*     radious[0] = (std::abs(center[0]) < 4.0) ? 4.0 : std::abs(center[0]);
                 radious[1] = (std::abs(center[1]) < 4.0) ? 4.0 : std::abs(center[1]);
-                radious[2] = (std::abs(center[2]) < space_min_z) ? space_min_z: std::abs(center[2]);
+                radious[2] = (std::abs(center[2]) < space_min_z) ? space_min_z: std::abs(center[2]);*/
+
+		radious[0] = std::abs(center[0]);
+                radious[1] = std::abs(center[1]);
+                radious[2] = std::abs(center[2]);
+
                 // std::cout<< "======3" << std::endl;
                 center = (end_pt + start_pt)/2.0;
                 Eigen::Vector3d a(0,0,1);
@@ -202,6 +207,10 @@ int KinodynamicRRTstar::search(Eigen::Vector3d start_pt, Eigen::Vector3d start_v
   if(smoothed_paths.size() > 0 && index_of_loweres_cost>-1){
     std::vector<kamaz::hagen::PathNode> smoothed_path;
     rrtstart3d_procesor.get_smoothed_waypoints(smoothed_paths[index_of_loweres_cost], smoothed_path);
+    
+    path_length += get_distance(smoothed_path);
+    std::cout << "***************path length is************: " << path_length << endl;
+
     smoothed_paths[index_of_loweres_cost] = smoothed_path;
     bool is_horizon = true;
     if(which_desk == 1){
@@ -324,7 +333,8 @@ void KinodynamicRRTstar::setParam(ros::NodeHandle& nh)
   nh.param("search/rrt_star_steer_min", rrt_star_steer_min, -1.0);
   nh.param("search/rrt_order_of_search_space", order_of_search_space, -1);
   nh.param("search/lqr_min_dis_points", _min_dis_points, -1.0);
-  
+  nh.param("search/rrt_max_samples", max_samples, -1);
+  nh.param("search/rrt_res", r, -1.0);
   nh.param("search/rrt_search_space_min_z", space_min_z, -1.0);
   nh.param("search/rrt_star_steer_max", rrt_star_steer_max, -1.0);
   nh.param("search/lqr_obs_radius", obstacle_radios, -1.0);

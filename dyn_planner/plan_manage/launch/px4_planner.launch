@@ -2,9 +2,9 @@
   <arg name="max_vel" value="0.6"/>
   <arg name="max_acc" value="0.3"/>
   <arg name="dynamic" value="0"/>
-  <arg name="obs_avoidance_dis" value="0.8"/>
+  <arg name="obs_avoidance_dis" value="0.2"/>
   <arg name="map_resolution" value="0.2"/>
-  <arg name="obs_margin" value="0.8"/>
+  <arg name="obs_margin" value="0.2"/>
   
   <node pkg="tf" name="world_map_tf" type="static_transform_publisher" args="0 0 0 0 0 0 world map 100" />
   <node pkg="tf" name="world_base_link_tf" type="static_transform_publisher" args="0 0 0 0 0 0 world base_link 100" />
@@ -79,7 +79,7 @@
     <param name="search/max_vel" value="$(arg max_vel)" type="double"/>
     <param name="search/max_acc" value="$(arg max_acc)" type="double"/>
     <param name="search/w_time" value="15.0" type="double"/>
-    <param name="search/horizon" value="3" type="double"/>
+    <param name="search/horizon" value="100" type="double"/>
     <param name="search/lambda_heu" value="5.0" type="double"/>
     <param name="search/resolution_astar" value="0.3" type="double"/>
     <param name="search/time_resolution" value="0.8" type="double"/>
@@ -87,7 +87,7 @@
     <param name="search/allocate_num" value="100000" type="int"/>
     <param name="search/check_num" value="5" type="int"/>
     <param name="search/allocate_num" value="100000" type="int"/>
-    <param name="search/number_of_paths" value="4" type="int"/>
+    <param name="search/number_of_paths" value="10" type="int"/>
     <param name="search/lqr_feasibility_max_vel" value="0.15" type="double"/>
     <param name="search/lqr_min_dis" value="0.4" type="double"/>
     <param name="search/lqr_min_dt" value="0.15" type="double"/>
@@ -97,6 +97,8 @@
     <param name="search/lqr_consider_obs" value="false" type="bool"/>
     <param name="search/lqr_number_of_closest_obs" value="10" type="int"/>
     <param name="search/rrt_avoidance_dist" value="$(arg obs_avoidance_dis)" type="double"/>
+    <param name="search/rrt_max_samples" value="500" type="int"/>
+    <param name="search/rrt_res" value="0.2" type="double"/>
     <param name="search/rrt_search_space_min_z" value="1.0" type="double"/>
     <param name="search/rrt_star_steer_min" value="1.0" type="double"/>
     <param name="search/rrt_star_steer_max" value="1.5" type="double"/>

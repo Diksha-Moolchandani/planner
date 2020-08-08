@@ -65,7 +65,7 @@ private:
   int wp_num_;
 
   /* ---------- planning api ---------- */
-  Eigen::Vector3d start_pt_, start_vel_, start_acc_, end_pt_, end_vel_;
+  Eigen::Vector3d start_pt_, start_vel_, start_acc_, end_pt_, end_vel_,temp_pt, temp_vel;
   int current_wp_;
 
   bool planSearchOpt();  // front-end and back-end method

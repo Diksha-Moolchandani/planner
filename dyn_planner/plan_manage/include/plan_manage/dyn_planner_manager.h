@@ -41,6 +41,7 @@ public:
   /* ---------- main API ---------- */
   /* generated traj */
   int traj_id_, dynamic_;
+  double t_search;
   double traj_duration_, t_start_, t_end_, margin_, time_start_;
   ros::Time time_traj_start_;
   Eigen::Vector3d pos_traj_start_;
